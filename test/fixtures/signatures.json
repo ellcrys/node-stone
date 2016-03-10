@@ -1,0 +1,34 @@
+{
+	"invalid": [ 
+		{
+			"unexpected_key": "abc",
+			"meta": "xxx",
+			"attributes": "xxx",
+			"ownership": "xxx",
+			"embeds": "xxx"
+		},
+		{
+			"attributes": "xxx",
+			"ownership": "xxx",
+			"embeds": "xxx"
+		},
+		{
+			"meta": 1234
+		},
+		{
+			"meta": "xxx",
+			"ownership": 1234
+		},
+		{
+			"meta": "xxx",
+			"ownership": "xxx",
+			"attributes": 123
+		},
+		{
+			"meta": "xxx",
+			"ownership": "xxx",
+			"attributes": "xxx",
+			"embeds": 123
+		}
+	]
+}

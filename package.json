@@ -1,0 +1,19 @@
+{
+  "name": "node-stone",
+  "version": "0.0.1",
+  "description": "Official ellcrys library for stone creation and verification",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Kennedy Idialu <kennedyidialu@gmail.com> (ncodes.wordpress.com)",
+  "license": "ISC",
+  "dependencies": {
+    "bencode": "^0.7.0",
+    "lodash": "^4.6.1",
+    "moment": "^2.11.2",
+    "node-fixtures": "0.0.1",
+    "tape": "^4.5.0",
+    "ursa": "^0.9.3"
+  }
+}

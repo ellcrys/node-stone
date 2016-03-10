@@ -1,0 +1,171 @@
+{
+	"missingBlocks": [
+		{
+			"meta": {
+				"stone_id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+				"stone_type": "something",
+				"created_at": 1453975574
+			}
+		}
+	],
+
+	"invalid": [
+		{
+			"signatures": {
+				"meta": "xxx"
+			},
+			"meta": {
+				"stone_id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+				"stone_type": "something",
+				"created_at": 1453975574
+			},
+			"attributes": "abc"
+		},
+		{
+			"signatures": {
+				"meta": "xxx"
+			},
+			"meta": {
+				"stone_id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+				"stone_type": "something",
+				"created_at": 1453975574
+			},
+			"attributes": { "k": "v" }
+		},
+		{
+			"signatures": {
+				"meta": "xxx",
+				"attributes": "xxx"
+			},
+			"meta": {
+				"stone_id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+				"stone_type": "something",
+				"created_at": 1453975574
+			},
+			"attributes": { "k": "v" },
+			"embeds": "abcde"
+		},
+		{
+			"signatures": {
+				"meta": "xxx",
+				"attributes": "xxx"
+			},
+			"meta": {
+				"stone_id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+				"stone_type": "something",
+				"created_at": 1453975574
+			},
+			"attributes": { "k": "v" },
+			"embeds": [{}]
+		},
+		{
+			"signatures": {
+				"meta": "xxx",
+				"attributes": "xxx",
+				"embeds": "xxx"
+			},
+			"meta": {
+				"stone_id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+				"stone_type": "something",
+				"created_at": 1453975574
+			},
+			"attributes": { "k": "v" },
+			"embeds": [{}]
+		},
+		{
+			"signatures": {
+				"meta": "xxx",
+				"embeds": "xxx"
+			},
+			"meta": {
+				"stone_id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+				"stone_type": "something",
+				"created_at": 1453975574
+			},
+			"embeds": [
+				{
+					"signatures": {
+						"meta": "xxx",
+						"embeds": "xxx"
+					},
+					"meta": {
+						"stone_id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+						"stone_type": "something",
+						"created_at": 1453975574
+					},
+					"embeds": "invalid_value_type" 
+				}
+			]
+		}
+	],
+	"valid": [
+		{
+			"signatures": {
+				"meta": "xxx"
+			},
+			"meta": {
+				"stone_id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+				"stone_type": "something",
+				"created_at": 1453975574
+			},
+			"embeds": []
+		},
+		{
+			"signatures": {
+				"meta": "xxx",
+				"ownership": "xxx"
+			},
+			"meta": {
+				"stone_id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+				"stone_type": "something",
+				"created_at": 1453975574
+			},
+			"ownership": {
+				"type": "sole",
+				"sole": {
+					"address_id": "xxx"
+				}
+			},
+			"embeds": []
+		},
+		{
+			"signatures": {
+				"meta": "xxx",
+				"ownership": "xxx",
+				"attributes": "xxx"
+			},
+			"meta": {
+				"stone_id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+				"stone_type": "something",
+				"created_at": 1453975574
+			},
+			"attributes": {
+				"key": "val"
+			},
+			"embeds": []
+		},
+		{
+			"signatures": {
+				"meta": "xxx",
+				"embeds": "xxx"
+			},
+			"meta": {
+				"stone_id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+				"stone_type": "something",
+				"created_at": 1453975574
+			},
+			"embeds": [
+				{
+					"signatures": {
+						"meta": "xxx"
+					},
+					"meta": {
+						"stone_id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+						"stone_type": "something",
+						"created_at": 1453975574
+					}
+				}
+			]
+		}
+	]
+}

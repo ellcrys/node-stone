@@ -1,0 +1,59 @@
+{
+	"invalid": [ 
+		{
+			"unexpected_key": "abc",
+			"sole": "xxx",
+			"type": "xxx",
+			"status": "xxx"
+		},
+		{
+			"sole": "xxx",
+			"status": "xxx"
+		},
+		{
+			"sole": "xxx",
+			"type": 123,
+			"status": "xxx"
+		},
+		{
+			"sole": "xxx",
+			"type": "some_value",
+			"status": "xxx"
+		},
+		{
+			"type": "sole",
+			"status": "xxx"
+		},
+		{
+			"sole": "xxx",
+			"type": "sole",
+			"status": "xxx"
+		},
+		{
+			"type": "sole",
+			"sole": {},
+			"status": "xxx"
+		},
+		{
+			"type": "sole",
+			"sole": {
+				"address_id": 123	
+			},
+			"status": "xxx"
+		},
+		{
+			"type": "sole",
+			"sole": {
+				"address_id": "xxx"	
+			},
+			"status": 123
+		},
+		{
+			"type": "sole",
+			"sole": {
+				"address_id": "xxx"	
+			},
+			"status": "abc"
+		}
+	]
+}	
