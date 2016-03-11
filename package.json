@@ -1,7 +1,7 @@
 {
   "name": "node-stone",
-  "version": "0.0.1",
-  "description": "Official ellcrys library for stone creation and verification",
+  "version": "0.0.2",
+  "description": "Official library for creating, validating and verifying ellcry's stones",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -10,10 +10,28 @@
   "license": "ISC",
   "dependencies": {
     "bencode": "^0.7.0",
+    "has-float": "0.0.2",
     "lodash": "^4.6.1",
     "moment": "^2.11.2",
     "node-fixtures": "0.0.1",
     "tape": "^4.5.0",
     "ursa": "^0.9.3"
-  }
+  },
+  "directories": {
+    "test": "test"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ellcrys/node-stone.git"
+  },
+  "keywords": [
+    "ellcrys",
+    "nodejs",
+    "stone"
+  ],
+  "bugs": {
+    "url": "https://github.com/ellcrys/node-stone/issues"
+  },
+  "homepage": "https://github.com/ellcrys/node-stone#readme"
 }

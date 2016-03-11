@@ -29,6 +29,11 @@
 			"ownership": "xxx",
 			"attributes": "xxx",
 			"embeds": 123
+		},
+		{
+			"meta": "xxx",
+			"ownership": "xxx",
+			"attributes": 200.10
 		}
 	]
 }

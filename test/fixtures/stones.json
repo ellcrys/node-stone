@@ -96,6 +96,22 @@
 					"embeds": "invalid_value_type" 
 				}
 			]
+		},
+		{
+			"signatures": {
+				"meta": "xxx",
+				"ownership": "xxx",
+				"attributes": "xxx"
+			},
+			"meta": {
+				"stone_id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+				"stone_type": "something",
+				"created_at": 1453975574
+			},
+			"attributes": {
+				"amount": 20.3
+			},
+			"embeds": []
 		}
 	],
 	"valid": [

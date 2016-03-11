@@ -7,6 +7,7 @@
 var Validator = {};
 var _ 		  = require('lodash');
 var moment 	  = require('moment');
+var hasFloat  = require('has-float');
 module.exports 	  = Validator;
 
 // Ellcrys start time. Stones must never be created before this time
@@ -105,9 +106,17 @@ Validator.validate = function(stoneJSON) {
 
 	// validate attributes block if provided
 	if (attributesBlock) {
+		
 		if (!_.isPlainObject(attributesBlock)) {
 			return new Error('`attributes` block value type is invalid. Expects a JSON object');
 		}
+
+		// since this block will contain arbitrary data, we must
+		// ensure no float value is used here
+		if (hasFloat(attributesBlock)) {
+			return new Error("float value is forbidden");
+		}
+
 		if (!_.isEmpty(attributesBlock)) {
 			if (!signaturesBlock.attributes) {
 				return new Error("missing `attributes` property in `signatures` block");
@@ -246,8 +255,8 @@ Validator.validateMetaBlock = function (meta) {
 	}
 
 	// created_at must be a number and a valid unix date in the past but not before a start/launch time
-	if (!_.isNumber(meta.created_at)) {
-		return new Error('`meta.created_at` value type is invalid. Expects a number')
+	if (!_.isInteger(meta.created_at)) {
+		return new Error('`meta.created_at` value type is invalid. Expects an integer')
 	} else if (moment.unix(meta.created_at).isBefore(START_TIME)) {
 		return new Error('`meta.created_at` value is too far in the past. Expects unix time on or after ' + START_TIME.format())
 	} else if (moment.unix(meta.created_at).isAfter(moment())) {

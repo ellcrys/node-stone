@@ -81,14 +81,21 @@ test('.validate()', function (t) {
 	    st.end();
 	});
 
+	t.test('attributes block cannot have float value', function(st){
+		fx.stones.invalid[6].meta.created_at = moment().unix();
+		var result = validator.validate(fx.stones.invalid[6]);
+		st.equal(result.message, "float value is forbidden", "attribues block cannot have float value");
+		st.end()
+	});
+
 });
 
 test('.validateMetaBlock()', function(t){
 
 	t.test('call .validateMetaBlock() with invalid parameters', function(st){
 
-		fx.meta.invalid[7] = _.clone(fx.meta.invalid["6"])
-		fx.meta.invalid[7].created_at = moment().add(5, 'seconds').unix()
+		fx.meta.invalid[7] = _.clone(fx.meta.invalid["6"]);
+		fx.meta.invalid[7].created_at = moment().add(5, 'seconds').unix();
 
 		var cases = [
 	    	{ param: "abc", expected: "Expects a json object as parameter", msg: "parameter must be a json object" },
@@ -97,7 +104,7 @@ test('.validateMetaBlock()', function(t){
 	    	{ param: fx.meta.invalid[2], expected: "`meta.stone_id` value type is invalid. Expects string value", msg: "meta.stone_id property value type must be string" },
 	    	{ param: fx.meta.invalid[3], expected: "`meta.stone_id` must have 40 characters. Preferrable a UUIDv4 SHA1 hashed string", msg: "meta.stone_id property value length must be 40" },
 	    	{ param: fx.meta.invalid[4], expected: "`meta.stone_type` value type is invalid. Expects string value", msg: "meta.stone_type property value type must be string" },
-	    	{ param: fx.meta.invalid[5], expected: "`meta.created_at` value type is invalid. Expects a number", msg: "meta.created_at property value type must be number" },
+	    	{ param: fx.meta.invalid[5], expected: "`meta.created_at` value type is invalid. Expects an integer", msg: "meta.created_at property value type must be number" },
 	    	{ param: fx.meta.invalid[6], expected: "`meta.created_at` value is too far in the past. Expects unix time on or after " + moment.unix(validator.getStartTime()).format() + "", msg: "meta.created_at property value cannot be before the start time" },
 	    	{ param: fx.meta.invalid[7], expected: "`meta.created_at` value cannot be a unix time in the future", msg: "meta.created_at property value cannot be a time in the future" },
 	    ];
