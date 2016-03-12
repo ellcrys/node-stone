@@ -215,9 +215,9 @@ Validator.validateSignaturesBlock = function (signatures) {
  * Given a json object, it checks whether the object conforms to the standards a valid meta block.
  * Rules:
  * * Must not contain unknown properties
- * * A valid meta block must contain stone_id, stone_type and created_at properties.
- * * stone_id must be string and 40 characters in length
- * * stone_type must be string
+ * * A valid meta block must contain id, type and created_at properties.
+ * * id must be string and 40 characters in length
+ * * type must be string
  * * created_at must be a number and a valid unix date in the past but not beyond a start/launch time
  *    
  * @param  {object} 		meta an object that represents a stone's meta information
@@ -229,29 +229,29 @@ Validator.validateMetaBlock = function (meta) {
 	if (!_.isPlainObject(meta)) return new Error("Expects a json object as parameter");
 
 	// must reject unexpected properties
-	var accetableProps = ["stone_id", "stone_type", "created_at"];
+	var accetableProps = ["id", "type", "created_at"];
 	var unexpectedProps = _.difference(Object.keys(meta), accetableProps);
 	if (unexpectedProps.length > 0) {
 		return new Error('`'+unexpectedProps[0] + '` property is unexpected in `meta` block');
 	}
 
-	// must contain acceptable properties such as stone_id, stone_type and created_at
+	// must contain acceptable properties such as id, type and created_at
 	for (var i = 0; i < accetableProps.length; i++) {
 		if (_.indexOf(Object.keys(meta), accetableProps[i]) === -1) {
 			return new Error('`meta` block is missing `'+accetableProps[i]+'` property');
 		}
 	}
 
-	// stone_id property must be a string and 40 characters in length
-	if ("string" !== typeof meta.stone_id) {
-		return new Error('`meta.stone_id` value type is invalid. Expects string value');
-	} else if (meta.stone_id.length !== 40) {
-		return new Error('`meta.stone_id` must have 40 characters. Preferrable a UUIDv4 SHA1 hashed string');
+	// id property must be a string and 40 characters in length
+	if ("string" !== typeof meta.id) {
+		return new Error('`meta.id` value type is invalid. Expects string value');
+	} else if (meta.id.length !== 40) {
+		return new Error('`meta.id` must have 40 characters. Preferrable a UUIDv4 SHA1 hashed string');
 	}
 
-	// stone_type property must be a string
-	if ("string" !== typeof meta.stone_type) {
-		return new Error('`meta.stone_type` value type is invalid. Expects string value');
+	// type property must be a string
+	if ("string" !== typeof meta.type) {
+		return new Error('`meta.type` value type is invalid. Expects string value');
 	}
 
 	// created_at must be a number and a valid unix date in the past but not before a start/launch time
