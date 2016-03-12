@@ -72,6 +72,7 @@ StoneObj.Stone = function Stone() {
  * @return {string|Error}      signature if successful, otherwise Error 
  */
 StoneObj.Stone.prototype.sign = function (blockName, privateKey) {
+
 	var signatureBaseString = null;
 	if (!privateKey || !_.trim(privateKey).length) return new Error("private key is required for signing");
 
