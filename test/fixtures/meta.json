@@ -2,35 +2,35 @@
 	"invalid": [ 
 		{
 			"unexpected_key": "abc",
-			"stone_id": "xxx"
+			"id": "xxx"
 		},
 		{
-			"stone_id": "xxx",
+			"id": "xxx",
 			"created_at": 12334444
 		},
 		{
-			"stone_id": 1,
-			"stone_type": "a_type",
+			"id": 1,
+			"type": "a_type",
 			"created_at": 12334444
 		},
 		{
-			"stone_id": "abc",
-			"stone_type": "a_type",
+			"id": "abc",
+			"type": "a_type",
 			"created_at": 12334444
 		},
 		{
-			"stone_id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-			"stone_type": 123,
+			"id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+			"type": 123,
 			"created_at": 12334444
 		},
 		{
-			"stone_id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-			"stone_type": "something",
+			"id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+			"type": "something",
 			"created_at": "abcde"
 		},
 		{
-			"stone_id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-			"stone_type": "something",
+			"id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+			"type": "something",
 			"created_at": 1453975574
 		},
 		{}

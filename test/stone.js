@@ -65,7 +65,7 @@ test('.create()', function (t) {
 
 	t.test("call with invalid meta information", function(st){
 		var result = stone.create({}, privateKey)
-		var expected = "`meta` block is missing `stone_id` property"
+		var expected = "`meta` block is missing `id` property"
 		st.equal(result.message, expected, "cannot pass invalid meta block data");
 	    st.end()
 	});
@@ -226,7 +226,7 @@ test('.clone()', function (t) {
 		var clone = s.clone();
 		st.equal(clone instanceof stone.Stone, true, "should be a stone instance");
 		st.deepEqual(clone, s, "original stone content should be equal to clone's content");
-		s.meta.stone_id = "xxx"
+		s.meta.id = "xxx"
 		st.notDeepEqual(clone, s, "update to original object should not affect cloned object");
 	    st.end()
 	});	
