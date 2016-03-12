@@ -178,16 +178,6 @@ StoneObj.Stone.prototype.verify = function (blockName, publicKey) {
 }
 
 /**
- * Checks whether a block has a signature in the `signatures` block
- * @param  {string}  blockName block name
- * @return {Boolean}           true if signature exist, otherwise false
- */
-StoneObj.Stone.prototype.hasSignature = function (blockName) {
-	return !!(this.signatures[blockName])
-}
-
-
-/**
  * Returns a JSON representation of the stone instance
  * @return {object} json object 
  */
