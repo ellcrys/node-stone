@@ -1,10 +1,8 @@
 {
 	"missingBlocks": [
 		{
-			"meta": {
-				"id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-				"type": "something",
-				"created_at": 1453975574
+			"attributes": {
+				"some_key": "some_value"
 			}
 		}
 	],

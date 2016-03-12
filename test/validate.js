@@ -21,10 +21,9 @@ test('.validate()', function (t) {
 	});
 
 	t.test('call .validate() with objects that have a missing block', function(st){
-		fx.stones.missingBlocks[0].meta.created_at = moment().unix();
 		var cases = [
 			{	param: {}, expected: "missing `meta` block", msg: "meta block is missing" },
-			{	param: fx.stones.missingBlocks[0], expected: "missing `signatures` block", msg: "signature block is missing" },
+			{	param: fx.stones.missingBlocks[0], expected: "missing `meta` block", msg: "meta block is missing" },
 		];
 		for (var i=0; i < cases.length; i++) {
 	    	var result = validator.validate(cases[i].param);
@@ -39,7 +38,6 @@ test('.validate()', function (t) {
 		fx.stones.invalid[1].meta.created_at = moment().unix();
 		var cases = [
 	    	{ param: fx.stones.invalid[0], expected: "`attributes` block value type is invalid. Expects a JSON object", msg: "attributes block value type must be a json object" },
-	    	{ param: fx.stones.invalid[1], expected: "missing `attributes` property in `signatures` block", msg: "since attributes block is set, signature block must have a attributes property" }
 	    ];
 	    for (var i=0; i < cases.length; i++) {
 	    	var result = validator.validate(cases[i].param);
@@ -55,7 +53,6 @@ test('.validate()', function (t) {
 		fx.stones.invalid[4].meta.created_at = moment().unix();
 		var cases = [
 	    	{ param: fx.stones.invalid[2], expected: "`embeds` block value type is invalid. Expects an array of only JSON objects", msg: "attributes block value type must be a json object" },
-	    	{ param: fx.stones.invalid[3], expected: "missing `embeds` property in `signatures` block", msg: "signatures block must have embeds property when embeds are available" },
 	    	{ param: fx.stones.invalid[4], expected: "unable to validate embed at index 0. Reason: missing `meta` block", msg: "objects in embeds array must be valid since the are passed to the validate operation" },
 	    ];
 	    for (var i=0; i < cases.length; i++) {
@@ -111,30 +108,6 @@ test('.validateMetaBlock()', function(t){
 	    
 	    for (var i=0; i < cases.length; i++) {
 	    	var result = validator.validateMetaBlock(cases[i].param);
-	    	st.equal(result instanceof Error, true, "error is expected")
-	    	st.equal(result.message, cases[i].expected, cases[i].msg);
-	    }
-	    st.end();
-	});
-
-});
-
-test('.validateSignaturesBlock()', function(t){
-
-	t.test('call .validateSignaturesBlock() with invalid parameters', function(st){
-		
-		var cases = [
-	    	{ param: "abc", expected: "Expects a json object as parameter", msg: "parameter must be a json object" },
-			{ param: fx.signatures.invalid[0], expected: "`unexpected_key` property is unexpected in `signatures` block", msg: "cannot have unrecognized property in signatures block" },
-			{ param: fx.signatures.invalid[1], expected: "missing `signatures.meta` property", msg: "signatures.meta must not be missing" },
-			{ param: fx.signatures.invalid[2], expected: "`signatures.meta` value type is invalid. Expects string value", msg: "signatures.meta value type must be a string" },
-			{ param: fx.signatures.invalid[3], expected: "`signatures.ownership` value type is invalid. Expects string value", msg: "signatures.ownership value type must be a string" },
-			{ param: fx.signatures.invalid[4], expected: "`signatures.attributes` value type is invalid. Expects string value", msg: "signatures.attributes value type must be a string" },
-			{ param: fx.signatures.invalid[5], expected: "`signatures.embeds` value type is invalid. Expects string value", msg: "signatures.embeds value type must be a string" }
-	    ];
-	    
-	    for (var i=0; i < cases.length; i++) {
-	    	var result = validator.validateSignaturesBlock(cases[i].param);
 	    	st.equal(result instanceof Error, true, "error is expected")
 	    	st.equal(result.message, cases[i].expected, cases[i].msg);
 	    }

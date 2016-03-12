@@ -55,7 +55,6 @@ Validator.validate = function(stoneJSON) {
 	if (!_.isPlainObject(stoneJSON)) return new Error("Expects a json object as parameter");
 
 	var metaBlock = stoneJSON.meta;
-	var signaturesBlock = stoneJSON.signatures;
 	var ownershipBlock = stoneJSON.ownership;
 	var attributesBlock = stoneJSON.attributes;
 	var embedsBlock = stoneJSON.embeds;
@@ -74,29 +73,12 @@ Validator.validate = function(stoneJSON) {
 		}
 	}
 
-	// validate signatures block
-	if (!signaturesBlock) {
-		return new Error("missing `signatures` block");
-	} else {
-		if (!_.isPlainObject(signaturesBlock)) {
-			return new Error("`signatures` block value type is invalid. Expects a JSON object");
-		} else {
-			var vResult = this.validateSignaturesBlock(signaturesBlock);
-			if (vResult != null) {
-				return vResult
-			}
-		}
-	}
-
 	// validate ownership block if provided
 	if (ownershipBlock) {
 		if (!_.isPlainObject(ownershipBlock)) {
 			return new Error("`ownership` block value type is invalid. Expects a JSON object");
 		}
 		if (!_.isEmpty(ownershipBlock)) {
-			if (!signaturesBlock.ownership) {
-				return new Error("missing `ownership` property in `signatures` block");
-			}
 			var vResult = this.validateOwnershipBlock(ownershipBlock);
 			if (vResult != null) {
 				return vResult
@@ -116,12 +98,6 @@ Validator.validate = function(stoneJSON) {
 		if (hasFloat(attributesBlock)) {
 			return new Error("float value is forbidden");
 		}
-
-		if (!_.isEmpty(attributesBlock)) {
-			if (!signaturesBlock.attributes) {
-				return new Error("missing `attributes` property in `signatures` block");
-			}
-		}
 	}
 
 	// validate embeds block if provided
@@ -129,11 +105,6 @@ Validator.validate = function(stoneJSON) {
 		
 		if (!_.isArray(embedsBlock) || !this.isArrayOfObjects(embedsBlock)) {
 			return new Error("`embeds` block value type is invalid. Expects an array of only JSON objects");
-		}
-		
-		// signature block must have embeds property as long as embeds is not empty
-		if (embedsBlock.length && !signaturesBlock.embeds){
-			return new Error("missing `embeds` property in `signatures` block");
 		}
 
 		// validate each embeds. To prevent continous validation of nested embeds,
@@ -158,54 +129,6 @@ Validator.validate = function(stoneJSON) {
 				embedsBlock[i].embeds = _embeds;
 			_embeds = null;
 		}
-	}
-
-	return null;
-}
-
-/**
- * Given a json object, it checks whether the object conforms to the standards a valid signatures block.
- * Rules:
- * * must contain only acceptable properties (meta, ownership, embeds)
- * * `meta` signature must be present and must be a string type
- * * `attributes` property must be string type if set
- * * `ownership` property must be string type if set
- * * `embeds` property must be string type if set
- * @param  {object} signatures object representing the signature information
- * @return {[type]}            will return Error if validation fails or null if no error 
- */
-Validator.validateSignaturesBlock = function (signatures) {
-
-	// expect a json object
-	if (!_.isPlainObject(signatures)) return new Error("Expects a json object as parameter");
-
-	// must reject unexpected properties
-	var accetableProps = ["meta", "ownership", "attributes", "embeds"];
-	var unexpectedProps = _.difference(Object.keys(signatures), accetableProps);
-	if (unexpectedProps.length > 0) {
-		return new Error('`'+unexpectedProps[0] + '` property is unexpected in `signatures` block');
-	}
-
-	// must have meta signature and it's value type must be a string
-	if (!signatures.meta) {
-		return new Error('missing `signatures.meta` property');
-	} else if ("string" !== typeof signatures.meta) {
-		return new Error('`signatures.meta` value type is invalid. Expects string value')
-	}
-
-	// if ownership property is set, it's value type must be a string
-	if (signatures.ownership && ("string" !== typeof signatures.ownership)) {
-		return new Error('`signatures.ownership` value type is invalid. Expects string value');
-	}
-
-	// if attributes property is set, it's value type must be a string
-	if (signatures.attributes && ("string" !== typeof signatures.attributes)) {
-		return new Error('`signatures.attributes` value type is invalid. Expects string value');
-	}
-
-	// if embeds property is set, it's value type must be a string
-	if (signatures.embeds && ("string" !== typeof signatures.embeds)) {
-		return new Error('`signatures.embeds` value type is invalid. Expects string value');
 	}
 
 	return null;
