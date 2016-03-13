@@ -72,6 +72,14 @@
 				"address_id": "xxx"	
 			},
 			"status": "abc"
+		},
+		{
+			"ref_id": "aaa",
+			"type": "sole",
+			"sole": {
+				"address_id": "xxx"	
+			},
+			"status": "transferred"
 		}
 	]
 }	

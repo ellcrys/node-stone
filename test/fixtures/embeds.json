@@ -21,11 +21,15 @@
 			"ref_id": 123
 		},
 		{
-			"ref_id": "abc"
+			"ref_id": "xxx"
 		},
 		{
-			"ref_id": "abc",
+			"ref_id": "xxx",
 			"data": {}
+		},
+		{
+			"ref_id": "xxx",
+			"data": [ "abc", {} ]
 		},
 		{
 			"ref_id": "abc",

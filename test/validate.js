@@ -108,11 +108,12 @@ test('.validateOwnershipBlock()', function(t){
 	    	{ param: fx.ownership.invalid[9], expected: "`ownership.sole.address_id` value type is invalid. Expects string value", msg: "ownership.sole.address_id value type must be a string" },
 	    	{ param: fx.ownership.invalid[10], expected: "`ownership.status` value type is invalid. Expects string value", msg: "ownership.status value type must be a string" },
 	    	{ param: fx.ownership.invalid[11], expected: "`ownership.status` property has unexpected value", msg: "ownership.status property has unexpected value" },
+	    	{ param: fx.ownership.invalid[12], expected: "`ownership.ref_id` not equal to `meta.id`", msg: "ownership.ref_id cannot be different from meta.id" },
 	    	
 	    ];
 	    
 	    for (var i=0; i < cases.length; i++) {
-	    	var result = validator.validateOwnershipBlock(cases[i].param);
+	    	var result = validator.validateOwnershipBlock(cases[i].param, "xxx");
 	    	st.equal(result instanceof Error, true, "error is expected")
 	    	st.equal(result.message, cases[i].expected, cases[i].msg);
 	    }
@@ -129,11 +130,12 @@ test('.validateAttributesBlock()', function(t){
 	    	{ param: fx.attributes.invalid[0], expected: "`unexpected_key` property is unexpected in `attributes` block", msg: "cannot have unrecognized property in attributes block" },
 	    	{ param: fx.attributes.invalid[1], expected: "`attributes` block is missing `ref_id` property", msg: "attributes block must have ref_id property" },
 	    	{ param: fx.attributes.invalid[2], expected: "`attributes.ref_id` value type is invalid. Expects string value", msg: "attributes.ref_id value type must be string" },
-
+	    	{ param: fx.attributes.invalid[3], expected: "`attributes.ref_id` not equal to `meta.id`", msg: "attributes.ref_id cannot be different from meta.id" },
+	    	
 	    ];
 	    
 	    for (var i=0; i < cases.length; i++) {
-	    	var result = validator.validateAttributesBlock(cases[i].param);
+	    	var result = validator.validateAttributesBlock(cases[i].param, "xxx");
 	    	st.equal(result instanceof Error, true, "error is expected")
 	    	st.equal(result.message, cases[i].expected, cases[i].msg);
 	    }
@@ -151,9 +153,10 @@ test('.validateEmbedsBlock()', function(t){
 	    	{ param: fx.embeds.invalid[4], expected: "`embeds` block is missing `data` property", msg: "data property is required when embeds block is not empty" },
 	    	{ param: fx.embeds.invalid[5], expected: "`embeds.data` value type is invalid. Expects an array of JSON objects", msg: "data property value type must be an array of objects" },
 	    	{ param: fx.embeds.invalid[6], expected: "`embeds.data` value type is invalid. Expects an array of JSON objects", msg: "data property value must be an array of only JSON objects" },
+	    	{ param: fx.embeds.invalid[7], expected: "`embeds.ref_id` not equal to `meta.id`", msg: "embeds.ref_id cannot be different from meta.id" },	   
 	    ];
 	    for (var i=0; i < cases.length; i++) {
-	    	var result = validator.validateEmbedsBlock(cases[i].param);
+	    	var result = validator.validateEmbedsBlock(cases[i].param, "xxx");
 	    	st.equal(result instanceof Error, true, "error is expected")
 	    	st.equal(result.message, cases[i].expected, cases[i].msg);
 	    }
@@ -167,7 +170,7 @@ test('.validateEmbedsBlock()', function(t){
 	    	{ param: fx.embeds.invalid[1], expected: null, msg: "second level embeds are never validated" },
 	    ];
 	    for (var i=0; i < cases.length; i++) {
-	    	var result = validator.validateEmbedsBlock(cases[i].param);
+	    	var result = validator.validateEmbedsBlock(cases[i].param, "xxx");
 	    	st.equal(result, cases[i].expected, cases[i].msg);
 	    }
 	    st.equal(level2Embeds, fx.embeds.invalid[1].data[0].embeds, "level 2 embeds must remain exact as the were before passing through validate()")

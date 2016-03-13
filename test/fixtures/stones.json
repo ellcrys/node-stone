@@ -23,7 +23,7 @@
 				"created_at": 1453975574
 			},
 			"attributes": { 
-				"ref_id": "xxx", 
+				"ref_id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx", 
 				"data": null
 			},
 			"embeds": "abcde"
@@ -45,7 +45,7 @@
 				"created_at": 1453975574
 			},
 			"ownership": {
-				"ref_id": "xxx",
+				"ref_id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 				"type": "sole",
 				"sole": {
 					"address_id": "xxx"
@@ -60,7 +60,7 @@
 				"created_at": 1453975574
 			},
 			"attributes": {
-				"ref_id": "xxx",
+				"ref_id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 				"data": 123
 			},
 			"embeds": {}
@@ -72,7 +72,7 @@
 				"created_at": 1453975574
 			},
 			"embeds": {
-				"ref_id": "xxx",
+				"ref_id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 				"data": [
 					{
 						"meta": {

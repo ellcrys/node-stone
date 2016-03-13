@@ -76,7 +76,6 @@ test('.toJSON()', function (t) {
 
 	t.test("succeed in converting to json", function(st){
 		var s = stone.load(fx.stones.valid[0])
-		console.log(s)
 		var stoneJSON = s.toJSON();
 		st.equal(_.isPlainObject(stoneJSON), true, "type must be json object");
 		st.deepEqual(s, stone.load(stoneJSON), "both objects must be equal")
@@ -141,6 +140,7 @@ test('.hasAttributes()', function (t) {
 
 	t.test("succeed in checking availability of attributes information", function(st){
 		var s = stone.load(fx.stones.valid[2]);
+		console.log(s)
 		var s2 = s.clone();
 		delete s2.attributes;
 		st.equal(s.hasAttributes(), true, "should have ownership information");
