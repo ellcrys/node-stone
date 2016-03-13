@@ -11,30 +11,46 @@
 			"status": "xxx"
 		},
 		{
+			"ref_id": 123,
+			"sole": "xxx",
+			"status": "xxx"
+		},
+		{
+			"ref_id": "xxx",
+			"sole": "xxx",
+			"status": "xxx"
+		},
+		{
+			"ref_id": "xxx",
 			"sole": "xxx",
 			"type": 123,
 			"status": "xxx"
 		},
 		{
+			"ref_id": "xxx",
 			"sole": "xxx",
 			"type": "some_value",
 			"status": "xxx"
 		},
 		{
+			"ref_id": "xxx",
 			"type": "sole",
 			"status": "xxx"
 		},
 		{
+			"ref_id": "xxx",
 			"sole": "xxx",
 			"type": "sole",
 			"status": "xxx"
 		},
 		{
+			"ref_id": "xxx",
 			"type": "sole",
 			"sole": {},
 			"status": "xxx"
 		},
 		{
+			"ref_id": "xxx",
 			"type": "sole",
 			"sole": {
 				"address_id": 123	
@@ -42,6 +58,7 @@
 			"status": "xxx"
 		},
 		{
+			"ref_id": "xxx",
 			"type": "sole",
 			"sole": {
 				"address_id": "xxx"	
@@ -49,6 +66,7 @@
 			"status": 123
 		},
 		{
+			"ref_id": "xxx",
 			"type": "sole",
 			"sole": {
 				"address_id": "xxx"	

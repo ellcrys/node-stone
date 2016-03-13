@@ -9,9 +9,6 @@
 
 	"invalid": [
 		{
-			"signatures": {
-				"meta": "xxx"
-			},
 			"meta": {
 				"id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 				"type": "something",
@@ -20,166 +17,72 @@
 			"attributes": "abc"
 		},
 		{
-			"signatures": {
-				"meta": "xxx"
-			},
 			"meta": {
 				"id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 				"type": "something",
 				"created_at": 1453975574
 			},
-			"attributes": { "k": "v" }
-		},
-		{
-			"signatures": {
-				"meta": "xxx",
-				"attributes": "xxx"
+			"attributes": { 
+				"ref_id": "xxx", 
+				"data": null
 			},
-			"meta": {
-				"id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-				"type": "something",
-				"created_at": 1453975574
-			},
-			"attributes": { "k": "v" },
 			"embeds": "abcde"
-		},
-		{
-			"signatures": {
-				"meta": "xxx",
-				"attributes": "xxx"
-			},
-			"meta": {
-				"id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-				"type": "something",
-				"created_at": 1453975574
-			},
-			"attributes": { "k": "v" },
-			"embeds": [{}]
-		},
-		{
-			"signatures": {
-				"meta": "xxx",
-				"attributes": "xxx",
-				"embeds": "xxx"
-			},
-			"meta": {
-				"id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-				"type": "something",
-				"created_at": 1453975574
-			},
-			"attributes": { "k": "v" },
-			"embeds": [{}]
-		},
-		{
-			"signatures": {
-				"meta": "xxx",
-				"embeds": "xxx"
-			},
-			"meta": {
-				"id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-				"type": "something",
-				"created_at": 1453975574
-			},
-			"embeds": [
-				{
-					"signatures": {
-						"meta": "xxx",
-						"embeds": "xxx"
-					},
-					"meta": {
-						"id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-						"type": "something",
-						"created_at": 1453975574
-					},
-					"embeds": "invalid_value_type" 
-				}
-			]
-		},
-		{
-			"signatures": {
-				"meta": "xxx",
-				"ownership": "xxx",
-				"attributes": "xxx"
-			},
-			"meta": {
-				"id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-				"type": "something",
-				"created_at": 1453975574
-			},
-			"attributes": {
-				"amount": 20.3
-			},
-			"embeds": []
 		}
 	],
 	"valid": [
 		{
-			"signatures": {
-				"meta": "xxx"
-			},
 			"meta": {
 				"id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 				"type": "something",
 				"created_at": 1453975574
 			},
-			"embeds": []
+			"embeds": {}
 		},
 		{
-			"signatures": {
-				"meta": "xxx",
-				"ownership": "xxx"
-			},
 			"meta": {
 				"id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 				"type": "something",
 				"created_at": 1453975574
 			},
 			"ownership": {
+				"ref_id": "xxx",
 				"type": "sole",
 				"sole": {
 					"address_id": "xxx"
 				}
 			},
-			"embeds": []
+			"embeds": {}
 		},
 		{
-			"signatures": {
-				"meta": "xxx",
-				"ownership": "xxx",
-				"attributes": "xxx"
-			},
 			"meta": {
 				"id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 				"type": "something",
 				"created_at": 1453975574
 			},
 			"attributes": {
-				"key": "val"
+				"ref_id": "xxx",
+				"data": 123
 			},
-			"embeds": []
+			"embeds": {}
 		},
 		{
-			"signatures": {
-				"meta": "xxx",
-				"embeds": "xxx"
-			},
 			"meta": {
 				"id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
 				"type": "something",
 				"created_at": 1453975574
 			},
-			"embeds": [
-				{
-					"signatures": {
-						"meta": "xxx"
-					},
-					"meta": {
-						"id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-						"type": "something",
-						"created_at": 1453975574
+			"embeds": {
+				"ref_id": "xxx",
+				"data": [
+					{
+						"meta": {
+							"id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+							"type": "something",
+							"created_at": 1453975574
+						}
 					}
-				}
-			]
+				]
+			}
 		}
 	]
 }

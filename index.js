@@ -22,7 +22,6 @@ module.exports = StoneObj;
 function newStone(data) {
 	var data = data || {};
 	var stone = new StoneObj.Stone();
-	stone.signatures = data.signatures || {};
 	stone.meta = data.meta || {};
 	stone.ownership = data.ownership || {};
 	stone.attributes = data.attributes || {};
@@ -53,7 +52,6 @@ function fromB64(b64Str) {
  * Stone object
  */
 StoneObj.Stone = function Stone() {
-	this.signatures = {};
 	this.meta = {};
 	this.ownership = {};
 	this.attributes = {};
@@ -183,7 +181,6 @@ StoneObj.Stone.prototype.verify = function (blockName, publicKey) {
  */
 StoneObj.Stone.prototype.toJSON = function() {
 	return {
-		signatures: _.cloneDeep(this.signatures),
 		meta: _.cloneDeep(this.meta),
 		ownership: _.cloneDeep(this.ownership),
 		attributes: _.cloneDeep(this.attributes),
@@ -261,13 +258,13 @@ StoneObj.Stone.prototype.addMeta = function (meta, privateKey) {
  * @param {object} ownership       ownership information
  * @param {string} privateKey private key for signing
  */
-StoneObj.Stone.prototype.addOwnership = function (ownership, privateKey) {
-	var result = Validator.validateOwnershipBlock(ownership);
-	if (result instanceof Error) return result;
-	this.ownership = ownership;
-	var sig = this.sign("ownership", privateKey);
-	return (sig instanceof Error) ? sig : null
-}
+// StoneObj.Stone.prototype.addOwnership = function (ownership, privateKey) {
+// 	var result = Validator.validateOwnershipBlock(ownership);
+// 	if (result instanceof Error) return result;
+// 	this.ownership = ownership;
+// 	var sig = this.sign("ownership", privateKey);
+// 	return (sig instanceof Error) ? sig : null
+// }
 
 /**
  * Initialize attributes block with new value. New value 
@@ -275,25 +272,25 @@ StoneObj.Stone.prototype.addOwnership = function (ownership, privateKey) {
  * @param {object} attributes       attributes information
  * @param {string} privateKey private key for signing
  */
-StoneObj.Stone.prototype.addAttributes = function (attributes, privateKey) {
-	if (!_.isPlainObject(attributes)) return new Error('`attributes` block value type is invalid. Expects a JSON object');
-	this.attributes = attributes;
-	var sig = this.sign("attributes", privateKey);
-	return (sig instanceof Error) ? sig : null
-}
+// StoneObj.Stone.prototype.addAttributes = function (attributes, privateKey) {
+// 	if (!_.isPlainObject(attributes)) return new Error('`attributes` block value type is invalid. Expects a JSON object');
+// 	this.attributes = attributes;
+// 	var sig = this.sign("attributes", privateKey);
+// 	return (sig instanceof Error) ? sig : null
+// }
 
 /**
  * Append a new embed object to the embeds block
  * @param {object} ownership       ownership information
  * @param {string} privateKey private key for signing
  */
-StoneObj.Stone.prototype.addEmbed = function (embed, privateKey) {
-	var result = Validator.validate(embed);
-	if (result instanceof Error) return result;
-	this.embeds.push(embed);
-	var sig = this.sign("embeds", privateKey);
-	return (sig instanceof Error) ? sig : null
-}
+// StoneObj.Stone.prototype.addEmbed = function (embed, privateKey) {
+// 	var result = Validator.validate(embed);
+// 	if (result instanceof Error) return result;
+// 	this.embeds.push(embed);
+// 	var sig = this.sign("embeds", privateKey);
+// 	return (sig instanceof Error) ? sig : null
+// }
 
 /**
  * Create a new stone with a valid meta block that
@@ -309,8 +306,8 @@ StoneObj.create = function (meta, privateKey) {
 	var err = Validator.validateMetaBlock(meta);
 	if (err instanceof Error) return err;
 	stone.meta = meta;
-	var signResult = stone.sign("meta", privateKey);
-	if (signResult instanceof Error) return signResult;
+	// var signResult = stone.sign("meta", privateKey);
+	// if (signResult instanceof Error) return signResult;
 	return stone;
 }
 

@@ -1,0 +1,35 @@
+{
+	"invalid": [
+		"abcde",
+		{
+			"ref_id": "xxx",
+			"data": [
+				{
+					"meta": {
+						"id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+						"type": "something",
+						"created_at": 1453975574
+					},
+					"embeds": "invalid_value_type" 
+				}
+			]
+		},
+		{
+			"some_key": "some_value"
+		},
+		{
+			"ref_id": 123
+		},
+		{
+			"ref_id": "abc"
+		},
+		{
+			"ref_id": "abc",
+			"data": {}
+		},
+		{
+			"ref_id": "abc",
+			"data": [ "abc", {} ]
+		}
+	]
+}
