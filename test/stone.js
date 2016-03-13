@@ -57,17 +57,19 @@ test('.loadJSON()', function (t) {
 test('.create()', function (t) {
 
 	t.test("call without private key", function(st){
-		var result = stone.create({}, null)
-		var expected = "private key is required for signing"
-		st.equal(result.message, expected, "private key is required");
-	    st.end()
+		var result = stone.create({}, null).catch(function(err){
+			var expected = "private key is required for signing"
+			st.equal(err.message, expected, "private key is required");
+		    st.end()
+		});
 	});
 
 	t.test("call with invalid meta information", function(st){
-		var result = stone.create({}, privateKey)
-		var expected = "`meta` block is missing `id` property"
-		st.equal(result.message, expected, "cannot pass invalid meta block data");
-	    st.end()
+		var result = stone.create({}, privateKey).catch(function(err){
+			var expected = "`meta` block is missing `id` property"
+			st.equal(err.message, expected, "private key is required");
+		    st.end()
+		});
 	});
 
 });
@@ -140,7 +142,6 @@ test('.hasAttributes()', function (t) {
 
 	t.test("succeed in checking availability of attributes information", function(st){
 		var s = stone.load(fx.stones.valid[2]);
-		console.log(s)
 		var s2 = s.clone();
 		delete s2.attributes;
 		st.equal(s.hasAttributes(), true, "should have ownership information");

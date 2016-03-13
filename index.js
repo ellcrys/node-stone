@@ -8,6 +8,7 @@ var _ 		 	= require('lodash');
 var utility 	= require('./utility');
 var Validator 	= require("./validate");
 var ursa 		= require("ursa");
+var Promise 	= require('bluebird');
 
 module.exports = StoneObj;
 
@@ -56,6 +57,7 @@ StoneObj.Stone = function Stone() {
 	this.ownership = {};
 	this.attributes = {};
 	this.embeds = [];
+	this.signatures = {};
 }
 
 /**
@@ -70,48 +72,50 @@ StoneObj.Stone = function Stone() {
  * @return {string|Error}      signature if successful, otherwise Error 
  */
 StoneObj.Stone.prototype.sign = function (blockName, privateKey) {
+	return new Promise(function(resolve, reject){
 
-	var signatureBaseString = null;
-	if (!privateKey || !_.trim(privateKey).length) return new Error("private key is required for signing");
+		var signature = null, payload = null;
 
-	// load private key
-	try { var key = ursa.coercePrivateKey(privateKey); } catch (e) { 
-		return (e.message === "Not a private key.") ? new Error("private key is invalid") : new Error("unknown error"); 
-	}
+		// private key is required
+		if (!privateKey || !_.trim(privateKey).length) return new Error("private key is required for signing");
 
-	// generate signature base string. Empty blocks will not be signed
-	switch(blockName) {
+		// load private key
+		try { ursa.coercePrivateKey(privateKey); } catch (e) { 
+			return (e.message === "Not a private key.") ? new Error("private key is invalid") : new Error("unknown error"); 
+		}
 
-		case "meta":
-			if (_.isEmpty(this.meta)) return "";
-			signatureBaseString = utility.getCanonicalString(this.meta);
-			break;
+		switch(blockName) {
 
-		case "ownership":
-			if (_.isEmpty(this.ownership)) return "";
-			signatureBaseString = utility.getCanonicalString(this.ownership);
-			break;
+			case "meta":
+				payload = this.meta;
+				break;
 
-		case "attributes":
-			if (_.isEmpty(this.attributes)) return "";
-			signatureBaseString = utility.getCanonicalString(this.attributes);
-			break;
+			case "ownership":
+				payload = this.ownership;
+				break;
 
-		case "embeds":
-			if (_.isEmpty(this.embeds)) return "";
-			var _canonicalEmbeds = [];
-			_.each(this.embeds, function(embed){ _canonicalEmbeds.push(utility.getCanonicalString(embed)); });
-			signatureBaseString = _canonicalEmbeds.join(",");				
-			break;
+			case "attributes":
+				payload = this.attributes;
+				break;
 
-		default:
-			return new Error("block unknown");
-	}
+			case "embeds":
+				payload = this.embeds;
+				break;
 
-	// generate signature and update the block's signature
-	var signature = key.hashAndSign("sha256", signatureBaseString, "utf8", "hex");
-	this.signatures[blockName] = signature;
-	return signature
+			default:
+				return new Error("block unknown");
+		}
+
+		// cannot sign empty block
+		if (_.isEmpty(payload)) return new Error("cannot sign empty block");
+
+		// generate signature 
+		utility.createRSASig(privateKey, JSON.stringify(payload)).then(function(signature){
+			this.signatures[blockName] = signature;
+			resolve(signature);
+		}.bind(this)).catch(reject);
+
+	}.bind(this));
 }
 
 /**
@@ -185,6 +189,7 @@ StoneObj.Stone.prototype.toJSON = function() {
 		ownership: _.cloneDeep(this.ownership),
 		attributes: _.cloneDeep(this.attributes),
 		embeds: _.cloneDeep(this.embeds)
+
 	}
 }
 
@@ -258,13 +263,13 @@ StoneObj.Stone.prototype.addMeta = function (meta, privateKey) {
  * @param {object} ownership       ownership information
  * @param {string} privateKey private key for signing
  */
-// StoneObj.Stone.prototype.addOwnership = function (ownership, privateKey) {
-// 	var result = Validator.validateOwnershipBlock(ownership);
-// 	if (result instanceof Error) return result;
-// 	this.ownership = ownership;
-// 	var sig = this.sign("ownership", privateKey);
-// 	return (sig instanceof Error) ? sig : null
-// }
+StoneObj.Stone.prototype.addOwnership = function (ownership, privateKey) {
+	var result = Validator.validateOwnershipBlock(ownership);
+	if (result instanceof Error) return result;
+	this.ownership = ownership;
+	var sig = this.sign("ownership", privateKey);
+	return (sig instanceof Error) ? sig : null
+}
 
 /**
  * Initialize attributes block with new value. New value 
@@ -272,25 +277,25 @@ StoneObj.Stone.prototype.addMeta = function (meta, privateKey) {
  * @param {object} attributes       attributes information
  * @param {string} privateKey private key for signing
  */
-// StoneObj.Stone.prototype.addAttributes = function (attributes, privateKey) {
-// 	if (!_.isPlainObject(attributes)) return new Error('`attributes` block value type is invalid. Expects a JSON object');
-// 	this.attributes = attributes;
-// 	var sig = this.sign("attributes", privateKey);
-// 	return (sig instanceof Error) ? sig : null
-// }
+StoneObj.Stone.prototype.addAttributes = function (attributes, privateKey) {
+	if (!_.isPlainObject(attributes)) return new Error('`attributes` block value type is invalid. Expects a JSON object');
+	this.attributes = attributes;
+	var sig = this.sign("attributes", privateKey);
+	return (sig instanceof Error) ? sig : null
+}
 
 /**
  * Append a new embed object to the embeds block
  * @param {object} ownership       ownership information
  * @param {string} privateKey private key for signing
  */
-// StoneObj.Stone.prototype.addEmbed = function (embed, privateKey) {
-// 	var result = Validator.validate(embed);
-// 	if (result instanceof Error) return result;
-// 	this.embeds.push(embed);
-// 	var sig = this.sign("embeds", privateKey);
-// 	return (sig instanceof Error) ? sig : null
-// }
+StoneObj.Stone.prototype.addEmbed = function (embed, privateKey) {
+	var result = Validator.validate(embed);
+	if (result instanceof Error) return result;
+	this.embeds.push(embed);
+	var sig = this.sign("embeds", privateKey);
+	return (sig instanceof Error) ? sig : null
+}
 
 /**
  * Create a new stone with a valid meta block that
@@ -298,17 +303,29 @@ StoneObj.Stone.prototype.addMeta = function (meta, privateKey) {
  * 
  * @param  {object} meta       meta block value
  * @param  {string} privateKey issuer private
- * @return {}            [description]
+ * @return {Promise}            [description]
  */
 StoneObj.create = function (meta, privateKey) {
-	if (!privateKey || !_.trim(privateKey).length) return new Error("private key is required for signing");
-	var stone = newStone();
-	var err = Validator.validateMetaBlock(meta);
-	if (err instanceof Error) return err;
-	stone.meta = meta;
-	// var signResult = stone.sign("meta", privateKey);
-	// if (signResult instanceof Error) return signResult;
-	return stone;
+	return new Promise(function(resolve, reject){
+
+		// private key is required
+		if (!privateKey || !_.trim(privateKey).length) return reject(new Error("private key is required for signing"));
+
+		// create new stone
+		var stone = newStone();
+
+		// validate meta block
+		var err = Validator.validateMetaBlock(meta);
+		if (err instanceof Error) return reject(err);
+
+		// assign meta to stone.meta
+		stone.meta = meta;
+
+		// sign meta block
+		stone.sign("meta", privateKey).then(function(signature){
+			resolve(stone);
+		}).catch(reject);
+	});
 }
 
 /**
@@ -317,7 +334,7 @@ StoneObj.create = function (meta, privateKey) {
  * If the string passed in starts with "{", it is considered a JSON string, otherwise, it assumes string is base 64 encoded and
  * will attempt to decoded it. 
  * @param  {string|object}	val a str
- * @return {object}         a stone object or an Error object
+ * @return {object}         	a stone object or an Error object
  */
 StoneObj.load = function(val) {
 
