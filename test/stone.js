@@ -14,8 +14,8 @@ fx.stones.valid[2].meta.created_at = moment().unix();
 fx.stones.valid[3].meta.created_at = moment().unix();
 fx.stones.valid[3].embeds.data[0].meta.created_at = moment().unix();
 
-var privateKey = "-----BEGIN RSA PRIVATE KEY-----\nMIICXgIBAAKBgQDUAwSH1WJcV7I/sU4w54BNYFHwgvpxiXkmPDDkEjFL6+LKX46p\nsEccT8ETR7enF42qQtV3iFrtLi3Rr5QtIPB2cjASoDvkQT7TlpsPG5SHJHqF+7iD\ndS25GMR9eoDtvB7TyBk0B1SjSOYIizzPfYgdFoIl/X82BCtQVL2xnsaaBwIDAQAB\nAoGBAMvLfs5nYp5rOg+ZixTdY2p9fSZZcQ40XH1RfJmvly1ouN9ZjZQ1u5VOYMT8\nul/m9ylEB1hYfTbine6i/SeIMzuXMP+fNktCEMKFEdqGhvodu8EqQtJMk3bHIqmO\ndrjXdn20emdqUHTNdZUPU2lK89Q4Z+m4jEFoOAtOhbe3AhlJAkEA+h/SFMbq5QRP\nrxwuhg3M55iGRdf21ch5x6X4zRKyUayYTDqGl2DWKOitK5LwI2EsdsTdGpeR49U2\n3rRTLYNcJQJBANj9/7ITENa6ciFipw6X95OGcccuLPUydkaZwT37nmDD4iCrCFS2\nx85R+h0iktf6xWKqbLSzajFGp8LLovHxr7sCQQC+A4x6Ij9yKdtLITKqvjMqwbFH\nv/ARqpHxPMINMKXs7Bxq1I9I0tT/EPv1PVRW3EyGEboSqJC5L1HWz9Dco41NAkAy\nj+UP8n9e+az0eI9iyChpWM+UUP8q12pWAyfTMJl0BNDhOdlEHB8sxU9ZkJ/U8dsi\npYGVDaV1+/fFXTwH0oBXAkEA3KlgV9nQHpSkQS1SrElVdBkOHPnO90orv7RtB2SM\nfiztPjnExA2AVEBIj4hDRE34sNFnBRTWyCHQqU2JPrkaeg==\n-----END RSA PRIVATE KEY-----"
-var publicKey = "-----BEGIN PUBLIC KEY-----\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDUAwSH1WJcV7I/sU4w54BNYFHw\ngvpxiXkmPDDkEjFL6+LKX46psEccT8ETR7enF42qQtV3iFrtLi3Rr5QtIPB2cjAS\noDvkQT7TlpsPG5SHJHqF+7iDdS25GMR9eoDtvB7TyBk0B1SjSOYIizzPfYgdFoIl\n/X82BCtQVL2xnsaaBwIDAQAB\n-----END PUBLIC KEY-----"
+var privateKey = fx.keys.valid[0];
+var publicKey = fx.keys.valid[1];
 
 test('.load()', function (t) {
 
@@ -23,8 +23,7 @@ test('.load()', function (t) {
 		var cases = [
 	    	{ param: "", expected: "cannot load empty string", msg: "cannot pass empty string" },
 	    	{ param: '{ "x": }', expected: "failed to load. JSON string is malformed", msg: "cannot pass malformed json" },
-	    	{ param: "abcde==", expected: "failed to load. JSON string is malformed", msg: "cannot pass malformed base64" },
-	    	{ param: 123, expected: "unsupported parameter type", msg: "parameter type is not supported" }
+	    	{ param: 123, expected: "unsupported parameter", msg: "parameter type is not supported" }
 	    ];
 	    for (var i=0; i < cases.length; i++) {
 	    	var result = stone.load(cases[i].param);
@@ -34,25 +33,21 @@ test('.load()', function (t) {
 	    st.end()
 	});
 
-});
-
-
-test('.loadJSON()', function (t) {
-
-	t.test("test different invalid parameters", function(st){
+	t.test("successfully load json object and json string", function(st){
+		var data = _.clone(fx.stones.valid[0]);
 		var cases = [
-	    	{ param: "{", expected: "failed to load. JSON string is malformed", msg: "cannot load malformed json" },
-	    	{ param: new Buffer("{").toString("base64") , expected: "failed to load. JSON string is malformed", msg: "cannot load base64 encoded malformed json" },
+	    	{ param: data, expected: stone.Stone, msg: "successfully loaded a json object" },
+	    	{ param: JSON.stringify(data), expected: stone.Stone, msg: "successfully loaded a json string" },
 	    ];
 	    for (var i=0; i < cases.length; i++) {
 	    	var result = stone.load(cases[i].param);
-	    	st.equal(result instanceof Error, true, "error is expected")
-	    	st.equal(result.message, cases[i].expected, cases[i].msg);
+	    	st.equal(result instanceof cases[i].expected, true, cases[i].msg)
 	    }
 	    st.end()
-	});
+	})
 
 });
+
 
 test('.create()', function (t) {
 
@@ -74,13 +69,111 @@ test('.create()', function (t) {
 
 });
 
+test('.sign()', function(t) {
+	
+	t.test('fail to sign: private is not passed', function(st){
+		var data = _.clone(fx.stones.valid[0]);
+    	var stn = stone.load(data);
+    	stn.sign("meta", null).catch(function(err){
+    		st.equal(err.message, 'private key is required for signing', "must provide a private key");
+    		st.end();
+    	});
+	});
+
+	t.test('fail to sign: private key is invalid', function(st){
+		var data = _.clone(fx.stones.valid[0]);
+    	var stn = stone.load(data);
+    	stn.sign("meta", publicKey).catch(function(err){
+    		st.equal(err.message, 'private key is invalid', "private key is invalid");
+    		st.end();
+    	});
+	});
+
+	t.test('failed to sign: sign unknown block', function(st){
+		var data = _.clone(fx.stones.valid[0]);
+    	var stn = stone.load(data);
+    	stn.sign("xxx", privateKey).catch(function(e){
+    		st.equal(e.message, 'block unknown');
+    		st.end();
+    	});
+	});
+
+	t.test('failed to sign: block is empty', function(st){
+		var data = _.clone(fx.stones.valid[0]);
+    	var stn = stone.load(data);
+    	stn.sign("embeds", privateKey).catch(function(e){
+    		st.equal(e.message, 'cannot sign empty block', 'cannot sign empty block');
+    		st.end();
+    	});
+	});
+
+	t.test('sign meta block', function(st){
+		var data = _.clone(fx.stones.valid[0]);
+    	var stn = stone.load(data);
+    	st.equal(stn.signatures.meta, undefined, "should not have signatures.meta set");
+    	stn.sign("meta", privateKey).then(function(signature){
+    		st.notEqual(stn.signatures.meta, undefined, "should have a signatures.meta set");
+    		st.equal(stn.signatures.meta, signature, "signature from sign() should be equal to signatures.meta");
+    		st.end();
+    	});
+	});
+
+});
+
+test('.verify()', function(t) {
+
+	t.test('fail to sign: public key is not passed', function(st){
+		var data = _.clone(fx.stones.valid[0]);
+    	var stn = stone.load(data);
+		stn.verify("meta", null).catch(function(err){
+			st.equal(err.message, 'public key is required for verifying', "must provide a public key");
+			st.end();
+		});
+	});
+
+	t.test('fail to sign: public key is invalid', function(st){
+		var data = _.clone(fx.stones.valid[0]);
+    	var stn = stone.load(data);
+		stn.verify("meta", privateKey).catch(function(err){
+			st.equal(err.message, 'public key is invalid', "must provide a valid public key");
+			st.end();
+		});
+	});
+
+	t.test('fail to sign: block has no signature', function(st){
+		var data = _.clone(fx.stones.valid[0]);
+    	var stn = stone.load(data);
+		stn.verify("meta", publicKey).catch(function(err){
+			st.equal(err.message, 'block `meta` has no signature', "cannot verify a block that has no signature");
+			st.end();
+		});
+	});
+
+	t.test('successfully verify a block', function(st){
+		var data = _.clone(fx.stones.valid[0]);
+    	var stn = stone.load(data);
+    	stn.sign("meta", privateKey).then(function(err){
+    		stn.verify("meta", publicKey).then(function(verified){
+    			st.equal(verified, true, "successfully verified block");
+    			st.end();
+    		});
+    	});
+	});
+
+});
+
 test('.toJSON()', function (t) {
 
 	t.test("succeed in converting to json", function(st){
 		var s = stone.load(fx.stones.valid[0])
 		var stoneJSON = s.toJSON();
 		st.equal(_.isPlainObject(stoneJSON), true, "type must be json object");
-		st.deepEqual(s, stone.load(stoneJSON), "both objects must be equal")
+		st.notEqual(stoneJSON.meta, undefined, "must have meta property");
+		st.notEqual(stoneJSON.attributes, undefined, "must have attributes property");
+		st.notEqual(stoneJSON.ownership, undefined, "must have ownership property");
+		st.notEqual(stoneJSON.embeds, undefined, "must have embeds property");
+		st.notEqual(stoneJSON.signatures, undefined, "must have signatures property")
+		st.deepEqual(s, stone.load(stoneJSON), "both objects must be equal");
 	    st.end()
 	});	
 
@@ -100,13 +193,43 @@ test('.isValid()', function (t) {
 
 test('.encode()', function (t) {
 
-	t.test("succeed in converting stone instance to base 64 string", function(st){
+	t.test("successfully encode stone signatures", function(st){
 		var s = stone.load(fx.stones.valid[0]);
 		var enc = s.encode();
 		st.equal(typeof enc, "string", "should be a string");
-		var loadEnc = stone.load(enc)
-		st.equal(loadEnc.isValid(), true, "should be valid");
 	    st.end()
+	});	
+
+});
+
+test('.decode()', function (t) {
+
+	t.test("failed because encoded signature is invalid", function(st){
+		var result = stone.decode("xxx");
+		st.equal(result.message, "failed to decode", "cannot decoded an invalid encoded stone signature");
+	    st.end()
+	});	
+
+	t.test("failed because signatures.meta is not a valid JWS signature", function(st){
+		var s = stone.load(fx.stones.valid[0]);
+		s.sign("meta", privateKey).then(function(signature){
+			s.signatures.meta = "xxx.xxx";
+			var enc = s.encode();
+			var result = stone.decode(enc);
+			st.equal(result.message, "failed to decode: invalid meta signature", "cannot decoded encoded signature with invalid signatures.meta signature");
+		    st.end()
+		});
+	});	
+
+	t.test("successfully encode stone signatures", function(st){
+		var s = stone.load(fx.stones.valid[0]);
+		s.sign("meta", privateKey).then(function(signature){
+			var enc = s.encode();
+			var decodedStone = stone.decode(enc);
+			st.equal(decodedStone instanceof stone.Stone, true, "should be an instance of stone.Stone");
+			st.equal(s.signatures.meta, decodedStone.signatures.meta)
+		    st.end()
+		});
 	});	
 
 });

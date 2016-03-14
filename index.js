@@ -8,6 +8,8 @@ var _ 		 	= require('lodash');
 var utility 	= require('./utility');
 var Validator 	= require("./validate");
 var ursa 		= require("ursa");
+var base64      = require("base64url");
+var blockNames  = ["meta", "ownership", "attributes", "embeds"];
 var Promise 	= require('bluebird');
 
 module.exports = StoneObj;
@@ -36,8 +38,7 @@ function newStone(data) {
  * @return {string}     base64 string
  */
 function toB64(str) {
-	var buf = new Buffer(str, 'utf-8');
-	return buf.toString("base64");
+	return base64.encode(str);
 }
 
 /**
@@ -46,7 +47,23 @@ function toB64(str) {
  * @return {string}        corresponding ascii string
  */
 function fromB64(b64Str) {
-	return new Buffer(b64Str, 'base64').toString("ascii");
+	return base64.decode(b64Str)
+}
+
+/**
+ * Given a valid json string representation of a stone, validate it and 
+ * return a stone object.
+ * @param  {string} str json representation of a stone
+ * @return {object}     a stone object if successful, otherwise an Error object
+ */
+function loadJSON(str) {
+	try {
+		var stoneJSON = JSON.parse(str);
+		var err = Validator.validate(stoneJSON);
+		return (err instanceof Error) ? err : newStone(stoneJSON);
+	} catch(e){
+		return new Error("failed to load. JSON string is malformed");
+	}
 }
 
 /**
@@ -74,43 +91,22 @@ StoneObj.Stone = function Stone() {
 StoneObj.Stone.prototype.sign = function (blockName, privateKey) {
 	return new Promise(function(resolve, reject){
 
-		var signature = null, payload = null;
+		var signature = null;
 
 		// private key is required
-		if (!privateKey || !_.trim(privateKey).length) return new Error("private key is required for signing");
+		if (!privateKey || !_.trim(privateKey).length) return reject(new Error("private key is required for signing"));
 
 		// load private key
-		try { ursa.coercePrivateKey(privateKey); } catch (e) { 
-			return (e.message === "Not a private key.") ? new Error("private key is invalid") : new Error("unknown error"); 
-		}
+		if (!utility.isValidRSAPrivatekKey(privateKey)) return reject(new Error("private key is invalid")); 
 
-		switch(blockName) {
-
-			case "meta":
-				payload = this.meta;
-				break;
-
-			case "ownership":
-				payload = this.ownership;
-				break;
-
-			case "attributes":
-				payload = this.attributes;
-				break;
-
-			case "embeds":
-				payload = this.embeds;
-				break;
-
-			default:
-				return new Error("block unknown");
-		}
+		// check if block name is valid
+		if (_.indexOf(blockNames, blockName) === -1) return reject(new Error("block unknown"));
 
 		// cannot sign empty block
-		if (_.isEmpty(payload)) return new Error("cannot sign empty block");
+		if (_.isEmpty(this[blockName])) return reject(new Error("cannot sign empty block"));
 
 		// generate signature 
-		utility.createRSASig(privateKey, JSON.stringify(payload)).then(function(signature){
+		utility.createRSASig(privateKey, JSON.stringify(this[blockName])).then(function(signature){
 			this.signatures[blockName] = signature;
 			resolve(signature);
 		}.bind(this)).catch(reject);
@@ -129,54 +125,23 @@ StoneObj.Stone.prototype.sign = function (blockName, privateKey) {
  * @return {Error|null}             null is returned if successful, otherwise an Error object
  */
 StoneObj.Stone.prototype.verify = function (blockName, publicKey) {
-	
-	var signatureBaseString = null, key = null;
-	if (!publicKey || !_.trim(publicKey).length) return new Error("public key is required for signing");
-	
-	// load key
-	try { key = ursa.coercePublicKey(publicKey); } catch(e){
-		return (e.message === "Not a public key.") ? new Error("public key is invalid") : new Error("unknown error");
-	}
+	return new Promise(function(resolve, reject){
 
-	switch(blockName){
+		// public key is required
+		if (!publicKey || !_.trim(publicKey).length) return reject(new Error("public key is required for verifying"));
+		
+		// check key validity
+		if (!utility.isValidRSAPublickKey(publicKey)) return reject(new Error("public key is invalid"));
 
-		case "meta":
-			if (_.isEmpty(this.meta)) return null;
-			signatureBaseString = utility.getCanonicalString(this.meta);
-			break;
+		// ensure block has signature
+		if (!this.hasSignature(blockName)) return reject(new Error("block `"+blockName+"` has no signature"));
 
-		case "ownership":
-			if (_.isEmpty(this.ownership)) return null;
-			signatureBaseString = utility.getCanonicalString(this.ownership);
-			break;
+		// verify an RSA signature
+		utility.verifyRSASig(publicKey, this.signatures[blockName]).then(function(result){
+			return (result.verified) ? resolve(true) : resolve(false);
+		}).catch(reject);
 
-		case "attributes":
-			if (_.isEmpty(this.attributes)) return null;
-			signatureBaseString = utility.getCanonicalString(this.attributes);
-			break;
-
-		case "embeds":
-			if (_.isEmpty(this.embeds)) return null;
-			var _canonicalEmbeds = [];
-			_.each(this.embeds, function(embed){ _canonicalEmbeds.push(utility.getCanonicalString(embed)); });
-			signatureBaseString = _canonicalEmbeds.join(",");
-			break;
-
-		default:
-			return new Error("block unknown");
-			break;
-	}
-
-	// ensure block has signature
-	if (!this.hasSignature(blockName)) 
-		return new Error("block `"+blockName+"` has no signature");
-
-	try {
-		var isVerified = key.hashAndVerify("sha256", new Buffer(signatureBaseString, "utf-8"), this.signatures[blockName], "hex")
-		return (isVerified) ? null : new Error("signature verification failed");
-	} catch (e) {
-		return new Error("signature verification failed");
-	}
+	}.bind(this));
 }
 
 /**
@@ -185,11 +150,11 @@ StoneObj.Stone.prototype.verify = function (blockName, publicKey) {
  */
 StoneObj.Stone.prototype.toJSON = function() {
 	return {
-		meta: _.cloneDeep(this.meta),
+		meta: _.clone(this.meta),
 		ownership: _.cloneDeep(this.ownership),
 		attributes: _.cloneDeep(this.attributes),
-		embeds: _.cloneDeep(this.embeds)
-
+		embeds: _.cloneDeep(this.embeds),
+		signatures: _.clone(this.signatures)
 	}
 }
 
@@ -202,11 +167,11 @@ StoneObj.Stone.prototype.isValid = function() {
 }
 
 /**
- * Encode a stone instance to base64
+ * Encode a base64 url equivalent of the instance signatures
  * @return {string} base 64 encoded representation of the instance
  */
 StoneObj.Stone.prototype.encode = function() {
-	var stoneJSON = JSON.stringify(this.toJSON());
+	var stoneJSON = JSON.stringify(this.toJSON().signatures);
 	return toB64(stoneJSON);
 }
 
@@ -241,6 +206,15 @@ StoneObj.Stone.prototype.hasAttributes = function() {
  */
 StoneObj.Stone.prototype.hasEmbeds = function() {
 	return !_.isEmpty(this.embeds);
+}
+
+/**
+ * Check whether a block has a signature
+ * @param  {string}  blockName block name
+ * @return {Boolean}           true if signature exists, otherwise false
+ */
+StoneObj.Stone.prototype.hasSignature = function (blockName) {
+	return (this.signatures[blockName]) ? true : false; 
 }
 
 /**
@@ -329,21 +303,20 @@ StoneObj.create = function (meta, privateKey) {
 }
 
 /**
- * Load a stone from a json object, json string or a base 64 encoded json string.
+ * Load a stone from a json object.
  * This function will not attempt to sign any stone blocks.
- * If the string passed in starts with "{", it is considered a JSON string, otherwise, it assumes string is base 64 encoded and
- * will attempt to decoded it. 
+ * String begining with "{" will be passed to JSON.parse.
+ *  
  * @param  {string|object}	val a str
  * @return {object}         	a stone object or an Error object
  */
 StoneObj.load = function(val) {
 
-	// load a json string or base64 encoded json string
+	// load a json string
 	if ("string" === typeof val) {
 		var stoneStr = _.trim(val);
 		if (stoneStr.length == 0) return new Error("cannot load empty string");
-		if (stoneStr[0] === "{") return this.loadJSON(stoneStr);
-		return this.loadJSON(fromB64(stoneStr));
+		if (stoneStr[0] === "{") return loadJSON(stoneStr);
 	}
 
 	// load a json object
@@ -353,22 +326,70 @@ StoneObj.load = function(val) {
 		return (err instanceof Error) ? err : newStone(val);
 	}
 
-	return new Error("unsupported parameter type");
+	return new Error("unsupported parameter");
 }
 
 /**
- * Given a valid json string representation of a stone, validate it and 
- * return a stone object.
- * @param  {string} str json representation of a stone
- * @return {object}     a stone object if successful, otherwise an Error object
+ * Given an encoded signed stone, it will attempt to
+ * decode and load the underlying stone object.
+ * @param  {string} val base64 url encoded stone 
+ * @return {[type]}     [description]
  */
-StoneObj.loadJSON = function(str) {
+StoneObj.decode = function(val) {
+
+	var signatures = null;
+	var signedStone = fromB64(val);
+	var curBlock = null;
+	var stone = newStone();
+
 	try {
-		var stoneJSON = JSON.parse(str);
-		var err = Validator.validate(stoneJSON);
-		return (err instanceof Error) ? err : newStone(stoneJSON);
+
+		// parse signed stone signatures object to json
+		signatures = JSON.parse(signedStone);
+
+		// process meta signature if available
+		if (signatures.meta) {
+			var result = utility.getJWSPayload(signatures.meta);
+			if (result instanceof Error) return result;
+			curBlock = "meta";
+			var block = JSON.parse(result);
+			stone.meta = block;
+			stone.signatures.meta = signatures.meta;
+		}
+
+		// process ownership signature if available
+		if (signatures.ownership) {
+			var result = utility.getJWSPayload(signatures.ownership);
+			if (result instanceof Error) return result;
+			curBlock = "ownership";
+			var block = JSON.parse(result);
+			stone.ownership = block;
+			stone.signatures.ownership = signatures.ownership;
+		}
+
+		// process attributes signature if available
+		if (signatures.attributes) {
+			var result = utility.getJWSPayload(signatures.attributes);
+			if (result instanceof Error) return result;
+			curBlock = "attributes";
+			var block = JSON.parse(result);
+			stone.attributes = block;
+			stone.signatures.attributes = signatures.attributes;
+		}
+
+		// process embeds signature if available
+		if (signatures.embeds) {
+			var result = utility.getJWSPayload(signatures.embeds);
+			if (result instanceof Error) return result;
+			curBlock = "embeds";
+			var block = JSON.parse(result);
+			stone.embeds = block;
+			stone.signatures.embeds = signatures.embeds;
+		}
+
+		return stone;
+
 	} catch(e){
-		return new Error("failed to load. JSON string is malformed");
+		return new Error("failed to decode" + ((!curBlock) ? "" : (": invalid " + curBlock + " signature")))
 	}
 }
-
