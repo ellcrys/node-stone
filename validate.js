@@ -45,7 +45,7 @@ Validator.isArrayOfObjects = function(val) {
 
 /**
  * Given a stone in , it checks whether 
- * the stone passes for a valid Ellcrys stone.
+ * the stone passes for a valid stone.
  * @param  {object} stoneJSON 	the stone as a json object
  * @return {object|null}        null if valid, otherwise an Error object
  */
@@ -153,13 +153,14 @@ Validator.validateMetaBlock = function (meta) {
  * * expects a json object as parameter
  * * must not contain expected properties other than `ref_id` and `data`
  * * ref_id must be set and should have a string value
- * * 
+ * * ref_id must be equal to meta id
+ * * data property must be set and value type must be an array of json objects
  * 
  * @param  {object} 		embeds 		an object that represents a stone's embeds information
- * @param  {string} 		stoneID     stone id property in meta block
+ * @param  {string} 		metaID     id property in meta block
  * @return {object|null}				will return Error if validation fails or null if no error
  */
-Validator.validateEmbedsBlock = function (embeds, stoneID) {
+Validator.validateEmbedsBlock = function (embeds, metaID) {
 
 	// expect a json object
 	if (!_.isPlainObject(embeds)) return new Error('`embeds` block value type is invalid. Expects a JSON object');
@@ -175,7 +176,7 @@ Validator.validateEmbedsBlock = function (embeds, stoneID) {
 	if ("string" !== typeof embeds.ref_id) return new Error('`embeds.ref_id` value type is invalid. Expects string value');
 
 	// ref id must be equal to stone id
-	if (embeds.ref_id !== stoneID) return new Error('`embeds.ref_id` not equal to `meta.id`');
+	if (embeds.ref_id !== metaID) return new Error('`embeds.ref_id` not equal to `meta.id`');
 
 	// data property must be set and value type must be an array of objects
 	if (!embeds.data) return new Error('`embeds` block is missing `data` property');
@@ -213,10 +214,10 @@ Validator.validateEmbedsBlock = function (embeds, stoneID) {
  * * ref_id property must be a string
  *    
  * @param  {object} 		attributes 	an object that represents a stone's attributes information
- * @param  {string} 		stoneID     stone id property in meta block
+ * @param  {string} 		metaID     id property in meta block
  * @return {object|null}				will return Error if validation fails or null if no error 
  */
-Validator.validateAttributesBlock = function (attributes, stoneID) {
+Validator.validateAttributesBlock = function (attributes, metaID) {
 
 	// expect a json object
 	if (!_.isPlainObject(attributes)) return new Error("ownership` block value type is invalid. Expects a JSON object");
@@ -230,7 +231,7 @@ Validator.validateAttributesBlock = function (attributes, stoneID) {
 	if ("string" !== typeof attributes.ref_id) return new Error('`attributes.ref_id` value type is invalid. Expects string value');
 
 	// ref id must be equal to stone id
-	if (attributes.ref_id !== stoneID) return new Error('`attributes.ref_id` not equal to `meta.id`');
+	if (attributes.ref_id !== metaID) return new Error('`attributes.ref_id` not equal to `meta.id`');
 
 	// since ref id is set, then data property is required
 	if (!attributes.data) return new Error('`attributes` block is missing `data` property');
@@ -243,7 +244,9 @@ Validator.validateAttributesBlock = function (attributes, stoneID) {
  * Rules:
  * * Must not contain unknown properties
  * * Must contain ref id and it must be a string
- * * A valid ownership block can only contain type, sole and status properties.
+ * * A valid ownership block can only contain ref_id, type, sole and status properties.
+ * * ownership.ref_id must be set and value type must be string
+ * * ref_id must be equal to the meta id
  * * ownership.type must be set, value type must be a string and value must be known
  *   - if ownership.type is 'sole':
  *     - ownership.sole must be set to an object
@@ -252,10 +255,10 @@ Validator.validateAttributesBlock = function (attributes, stoneID) {
  *   - ownership.status must be a string value. The value must also be known
  *     
  * @param  {object} ownership 	 	an object that represents a stone's ownership information
- * @param  {string} stoneID         stone id property in meta block
- * @return {[type]}      			will return Error if validation fails or null if no error 
+ * @param  {string} metaID          id property in meta block
+ * @return {null|Error}      		will return Error if validation fails or null if no error 
  */
-Validator.validateOwnershipBlock = function (ownership, stoneID) {
+Validator.validateOwnershipBlock = function (ownership, metaID) {
 
 	// expect a json object
 	if (!_.isPlainObject(ownership)) return new Error("`ownership` block value type is invalid. Expects a JSON object");
@@ -269,7 +272,7 @@ Validator.validateOwnershipBlock = function (ownership, stoneID) {
 	if ("string" !== typeof ownership.ref_id) return new Error('`ownership.ref_id` value type is invalid. Expects string value');
 
 	// ref id must be equal to stone id
-	if (ownership.ref_id !== stoneID) return new Error('`ownership.ref_id` not equal to `meta.id`');
+	if (ownership.ref_id !== metaID) return new Error('`ownership.ref_id` not equal to `meta.id`');
 
 	// type property must be set and it's value type must be string
 	if (!ownership.type) return new Error('`ownership` block is missing `type` property');

@@ -78,11 +78,9 @@ StoneObj.Stone = function Stone() {
 }
 
 /**
- * Sign a block. The signing process takes the value of a block,
- * converts it to a cononical string equivalent and uses the passed in
- * RSA private key to sign it. Signature generated is included in the 
- * `signatures` block. Empty blocks will not be signed; An empty string will
- * be returned.
+ * Sign a block. The signing process takes the value of a block and signs
+ * it using JWS. The signature generated is included in the 
+ * `signatures` block. If a block is empty or unknown, an error is returned 
  * 
  * @param  {string} blockName  name of block to sign
  * @param  {string} privateKey RSA private key for signing
@@ -133,6 +131,9 @@ StoneObj.Stone.prototype.verify = function (blockName, publicKey) {
 		// check key validity
 		if (!utility.isValidRSAPublickKey(publicKey)) return reject(new Error("public key is invalid"));
 
+		// check if block name is valid
+		if (_.indexOf(blockNames, blockName) === -1) return reject(new Error("block unknown"));
+		
 		// ensure block has signature
 		if (!this.hasSignature(blockName)) return reject(new Error("block `"+blockName+"` has no signature"));
 
