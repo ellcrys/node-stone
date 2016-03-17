@@ -235,12 +235,18 @@ StoneObj.Stone.prototype.addMeta = function (meta, privateKey) {
 
 /**
  * Initialize ownership block with new value. New value 
- * is validated and signed.
+ * is validated and signed. Meta.id must be set, otherwise an errror is returned.
+ * 
  * @param {object} ownership       ownership information
  * @param {string} privateKey private key for signing
  */
 StoneObj.Stone.prototype.addOwnership = function (ownership, privateKey) {
 	return new Promise(function(resolve, reject){
+		
+		if (!this.meta.id || ("string"  === typeof this.meta.id && !_.trim(this.meta.id).length)) {
+			return reject(new Error("meta.id is not set"));
+		}
+
 		var result = Validator.validateOwnershipBlock(ownership, this.meta.id);
 		if (result instanceof Error) return reject(result);
 		this.ownership = ownership;
@@ -250,12 +256,17 @@ StoneObj.Stone.prototype.addOwnership = function (ownership, privateKey) {
 
 /**
  * Initialize attributes block with new value. New value 
- * is validated and signed.
+ * is validated and signed. Meta.id must be set, otherwise an errror is returned.
  * @param {object} attributes       attributes information
  * @param {string} privateKey private key for signing
  */
 StoneObj.Stone.prototype.addAttributes = function (attributes, privateKey) {
 	return new Promise(function(resolve, reject){
+
+		if (!this.meta.id || ("string"  === typeof this.meta.id && !_.trim(this.meta.id).length)) {
+			return reject(new Error("meta.id is not set"));
+		}
+
 		var result = Validator.validateAttributesBlock(attributes, this.meta.id);
 		if (result instanceof Error) return reject(result);
 		this.attributes = attributes;
@@ -265,12 +276,18 @@ StoneObj.Stone.prototype.addAttributes = function (attributes, privateKey) {
 
 /**
  * Updates the embeds block with a new value. The valu must be a valid
- * embeds block.
+ * embeds block. Meta.id must be set, otherwise an errror is returned.
+ * 
  * @param {object} embeds      embeds information
  * @param {string} privateKey private key for signing
  */
 StoneObj.Stone.prototype.addEmbed = function (embeds, privateKey) {
 	return new Promise(function(resolve, reject){
+
+		if (!this.meta.id || ("string"  === typeof this.meta.id && !_.trim(this.meta.id).length)) {
+			return reject(new Error("meta.id is not set"));
+		}
+
 		var result = Validator.validateEmbedsBlock(embeds, this.meta.id);
 		if (result instanceof Error) return reject(result);
 		this.embeds = embeds;

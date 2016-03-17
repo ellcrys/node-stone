@@ -336,7 +336,18 @@ test(".add* methods", function(t){
 		});
 	});
 
-	t.test("successfully add addAttributes block", function(st){
+	t.test("addOwnership: fail because meta.id is not set", function(st){
+		var m = _.clone(meta)
+		var result = stone.create(m, privateKey).then(function(stn){
+			stn.meta.id = null;
+			stn.addOwnership({}, privateKey).catch(function(err){
+				st.equal(err.message, "meta.id is not set")
+				st.end()
+			})
+		});
+	});
+
+	t.test("addAttributes: successfully add block", function(st){
 		var m = _.clone(meta)
 		var result = stone.create(m, privateKey).then(function(stn){
 			var attributes = {
@@ -350,6 +361,17 @@ test(".add* methods", function(t){
 				st.end()
 			})
 		});
-	})
+	});
+
+	t.test("addAttributes: fail because meta.id is not set", function(st){
+		var m = _.clone(meta)
+		var result = stone.create(m, privateKey).then(function(stn){
+			stn.meta.id = null;
+			stn.addOwnership({}, privateKey).catch(function(err){
+				st.equal(err.message, "meta.id is not set")
+				st.end()
+			})
+		});
+	});
 
 });
