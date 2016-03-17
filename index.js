@@ -28,7 +28,7 @@ function newStone(data) {
 	stone.meta = data.meta || {};
 	stone.ownership = data.ownership || {};
 	stone.attributes = data.attributes || {};
-	stone.embeds = data.embeds || [];
+	stone.embeds = data.embeds || {};
 	return stone;
 }
 
@@ -73,7 +73,7 @@ StoneObj.Stone = function Stone() {
 	this.meta = {};
 	this.ownership = {};
 	this.attributes = {};
-	this.embeds = [];
+	this.embeds = {};
 	this.signatures = {};
 }
 
@@ -133,7 +133,7 @@ StoneObj.Stone.prototype.verify = function (blockName, publicKey) {
 
 		// check if block name is valid
 		if (_.indexOf(blockNames, blockName) === -1) return reject(new Error("block unknown"));
-		
+
 		// ensure block has signature
 		if (!this.hasSignature(blockName)) return reject(new Error("block `"+blockName+"` has no signature"));
 
@@ -225,11 +225,12 @@ StoneObj.Stone.prototype.hasSignature = function (blockName) {
  * @param {string} privateKey private key for signing
  */
 StoneObj.Stone.prototype.addMeta = function (meta, privateKey) {
-	var result = Validator.validateMetaBlock(meta);
-	if (result instanceof Error) return result;
-	this.meta = meta;
-	var sig = this.sign("meta", privateKey);
-	return (sig instanceof Error) ? sig : null
+	return new Promise(function(resolve, reject){
+		var result = Validator.validateMetaBlock(meta);
+		if (result instanceof Error) return reject(result);
+		this.meta = meta;
+		return this.sign("meta", privateKey).then(resolve).catch(reject);
+	}.bind(this));
 }
 
 /**
@@ -239,11 +240,12 @@ StoneObj.Stone.prototype.addMeta = function (meta, privateKey) {
  * @param {string} privateKey private key for signing
  */
 StoneObj.Stone.prototype.addOwnership = function (ownership, privateKey) {
-	var result = Validator.validateOwnershipBlock(ownership);
-	if (result instanceof Error) return result;
-	this.ownership = ownership;
-	var sig = this.sign("ownership", privateKey);
-	return (sig instanceof Error) ? sig : null
+	return new Promise(function(resolve, reject){
+		var result = Validator.validateOwnershipBlock(ownership, this.meta.id);
+		if (result instanceof Error) return reject(result);
+		this.ownership = ownership;
+		return this.sign("ownership", privateKey).then(resolve).catch(reject);
+	}.bind(this));
 }
 
 /**
@@ -253,23 +255,27 @@ StoneObj.Stone.prototype.addOwnership = function (ownership, privateKey) {
  * @param {string} privateKey private key for signing
  */
 StoneObj.Stone.prototype.addAttributes = function (attributes, privateKey) {
-	if (!_.isPlainObject(attributes)) return new Error('`attributes` block value type is invalid. Expects a JSON object');
-	this.attributes = attributes;
-	var sig = this.sign("attributes", privateKey);
-	return (sig instanceof Error) ? sig : null
+	return new Promise(function(resolve, reject){
+		var result = Validator.validateAttributesBlock(attributes, this.meta.id);
+		if (result instanceof Error) return reject(result);
+		this.attributes = attributes;
+		return this.sign("attributes", privateKey).then(resolve).catch(reject);
+	}.bind(this));
 }
 
 /**
- * Append a new embed object to the embeds block
- * @param {object} ownership       ownership information
+ * Updates the embeds block with a new value. The valu must be a valid
+ * embeds block.
+ * @param {object} embeds      embeds information
  * @param {string} privateKey private key for signing
  */
-StoneObj.Stone.prototype.addEmbed = function (embed, privateKey) {
-	var result = Validator.validate(embed);
-	if (result instanceof Error) return result;
-	this.embeds.push(embed);
-	var sig = this.sign("embeds", privateKey);
-	return (sig instanceof Error) ? sig : null
+StoneObj.Stone.prototype.addEmbed = function (embeds, privateKey) {
+	return new Promise(function(resolve, reject){
+		var result = Validator.validateEmbedsBlock(embeds, this.meta.id);
+		if (result instanceof Error) return reject(result);
+		this.embeds = embeds;
+		return this.sign("embeds", privateKey).then(resolve).catch(reject);
+	}.bind(this));
 }
 
 /**

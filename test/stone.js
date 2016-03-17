@@ -122,6 +122,15 @@ test('.sign()', function(t) {
 
 test('.verify()', function(t) {
 
+	t.test('fail to sign: unknown block name', function(st){
+		var data = _.clone(fx.stones.valid[0]);
+    	var stn = stone.load(data);
+		stn.verify("unknown_block", publicKey).catch(function(err){
+			st.equal(err.message, 'block unknown', "cannot pass unknown block name");
+			st.end();
+		});
+	});
+
 	t.test('fail to sign: public key is not passed', function(st){
 		var data = _.clone(fx.stones.valid[0]);
     	var stn = stone.load(data);
@@ -216,7 +225,7 @@ test('.decode()', function (t) {
 			s.signatures.meta = "xxx.xxx";
 			var enc = s.encode();
 			var result = stone.decode(enc);
-			st.equal(result.message, "failed to decode: invalid meta signature", "cannot decoded encoded signature with invalid signatures.meta signature");
+			st.equal(result.message, "parameter is not a valid JWS signature", "cannot decoded encoded signature with invalid signatures.meta signature");
 		    st.end()
 		});
 	});	
@@ -287,4 +296,60 @@ test('.hasEmbeds()', function (t) {
 
 });
 
+test(".add* methods", function(t){
 
+	var meta = {
+		id: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+		type: "coupon",
+		created_at: parseInt(Date.now() / 1000)
+	}
+
+	t.test("addMeta: successfully add block", function(st){
+		var m = _.clone(meta)
+		var result = stone.create(m, privateKey).then(function(stn){
+			var newMeta = _.clone(m);
+			newMeta.type = "couponx";
+			stn.addMeta(newMeta, privateKey).then(function(sig){
+				st.notEqual(newMeta.type, m.type)
+				st.notEqual(stn.signatures["meta"], undefined)
+				st.end()
+			})
+		});
+	});
+
+	t.test("addOwnership: successfully add block", function(st){
+		var m = _.clone(meta)
+		var result = stone.create(m, privateKey).then(function(stn){
+			var ownership = {
+				ref_id: m.id,
+				type: "sole",
+				sole: {
+					address_id: "abc"
+				}
+			}
+			st.deepEqual(stn.ownership, {})
+			stn.addOwnership(ownership, privateKey).then(function(sig){
+				st.notDeepEqual(stn.ownership, {})
+				st.equal(stn.signatures.ownership, sig)
+				st.end()
+			})
+		});
+	});
+
+	t.test("successfully add addAttributes block", function(st){
+		var m = _.clone(meta)
+		var result = stone.create(m, privateKey).then(function(stn){
+			var attributes = {
+				ref_id: m.id,
+				data: "some_data"
+			}
+			st.deepEqual(stn.attributes, {})
+			stn.addAttributes(attributes, privateKey).then(function(sig){
+				st.notDeepEqual(stn.attributes, {})
+				st.equal(stn.signatures.attributes, sig)
+				st.end()
+			})
+		});
+	})
+
+});
