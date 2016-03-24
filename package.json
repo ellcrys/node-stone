@@ -1,7 +1,7 @@
 {
   "name": "node-stone",
   "version": "1.0.1",
-  "description": "Official library for creating, validating and verifying ellcry's stones",
+  "description": "A library for creating, validating and verifying stones",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
