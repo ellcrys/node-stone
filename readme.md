@@ -1,10 +1,18 @@
 # Stone
 
-A token is a token that holds or represent digital asset for the purpose of transferring between persons and machines.
+A stone is a token that holds or represents digital asset for the purpose of transferring between persons and machines.
+
+
+# Install
+```
+npm install node-stone
+```
+
 
 # Example
 
 ```javascript
+var stone = require("node-stone");
 
 // A valid RSA private key
 var privateKey = "-----BEGIN RSA PRIVATE KEY----..."
@@ -26,5 +34,24 @@ stone.create(metaBlock, privateKey).then(function(stn){
 });
 ```
 
+```json
+{  
+   "meta":{  
+      "id":"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "created_at":1457441779,
+      "type":"coupon"
+   },
+   "ownership":{  
+   
+   },
+   "attributes":{  
+   
+   },
+   "embeds":{  
 
-
+   },
+   "signatures":{     
+       "meta":"eyJhbGciOiJSUzI1NiJ9.eyJpZHh4eHh4eHh4eHg=...Y291cG9uIn0.niwd6eB=...KUyEHHwg"
+   }
+}
+```
