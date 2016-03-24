@@ -23,7 +23,7 @@ var privateKey = "-----BEGIN RSA PRIVATE KEY----..."
 
 // define meta block
 var metaBlock = {
-	id: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+	id: "61144c09f35f1fd6d75265ceaf5bc8757c3a46c3",
 	created_at: 1457441779,
 	type: "coupon"
 }
@@ -45,24 +45,21 @@ Stone.create(metaBlock, privateKey).then(function(stn){
       "created_at":1457441779,
       "type":"coupon"
    },
-   "ownership":{  
-   
-   },
-   "attributes":{  
-   
-   },
-   "embeds":{  
-
-   },
+   "ownership":{ },
+   "attributes":{ },
+   "embeds":{},
    "signatures":{     
-       "meta":"eyJhbGciOiJSUzI1NiJ9.eyJpZHh4eHh4eHh4eHg=...Y291cG9uIn0.niwd6eB=...KUyEHHwg"
+       "meta":"eyJhbGciOiJSUzI1NiJ9.eyJpZHh4eHh4eH.niwd6eKUyEHHwg"
    }
 }
 ```
 
 # Load a stone
 
-Given a JSON representation of a stone. A stone object can be derived using the load() method. The JSON object must be a valid stone object. An [Error](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error) will be returned if stone validation is not passed, otherwise a Stone object is required. 
+Given a JSON representation of a stone. A stone object can be derived using the load() method.
+The JSON object must be a valid stone object. 
+An [Error](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error) 
+will be returned if stone validation is not passed, otherwise a Stone object is returned. 
 
 ```javascript
 var Stone = require("node-stone");
@@ -127,7 +124,8 @@ var stoneJSON = {
       "created_at":1457441779,
       "type":"coupon"
    },
-   "signatures":{             "meta":"eyJhbGciOiJSUzI1NiJ9.eyJpZHh4eHh4eHh4eHg=...Y291cG9uIn0.niwd6eB=...KUyEHHwg"
+   "signatures":{             
+      "meta":"eyJhbGciOiJSUzI1NiJ9.eyJpZHh4eHh4eHh4eHg=...Y291cG9uIn0.niwd6eB=...KUyEHHwg"
    }
 }
 
