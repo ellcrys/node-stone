@@ -81,7 +81,6 @@ This method does not sign or verifies the resulting stone object. Use `sign()` a
 
 # Sign a block
 
-
 #### Stone.sign(blockName, privateKey)
 
 
