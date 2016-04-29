@@ -29,6 +29,7 @@ function newStone(data) {
 	stone.ownership = data.ownership || {};
 	stone.attributes = data.attributes || {};
 	stone.embeds = data.embeds || {};
+	stone.signatures = data.signatures || {};
 	return stone;
 }
 
